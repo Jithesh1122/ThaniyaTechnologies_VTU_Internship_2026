@@ -1,5 +1,4 @@
 
-
 function createLogger() {
   return {
     log(level, message, context = {}) {
