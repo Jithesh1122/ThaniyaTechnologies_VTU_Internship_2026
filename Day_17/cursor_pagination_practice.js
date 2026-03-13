@@ -1,6 +1,6 @@
 /**
  * Practical cursor-pagination simulation.
- * Demonstrates ordered retrieval using nextCursor.
+ * Demonstrates ordered retrieval using nextCursor with a MongoDB-style filter mindset.
  */
 
 const students = [
@@ -12,8 +12,12 @@ const students = [
   { id: 106, name: "Nisha" },
 ];
 
-function getStudentsByCursor(records, cursor = null, limit = 2) {
-  const sorted = [...records].sort((a, b) => a.id - b.id);
+function getStudentsByCursor(records, cursor = null, limit = 2, minId = null) {
+  const filtered = minId === null
+    ? records
+    : records.filter((record) => record.id >= minId);
+
+  const sorted = [...filtered].sort((a, b) => a.id - b.id);
   const startIndex =
     cursor === null ? 0 : sorted.findIndex((record) => record.id > cursor);
 
@@ -37,9 +41,9 @@ function getStudentsByCursor(records, cursor = null, limit = 2) {
   };
 }
 
-const pageOne = getStudentsByCursor(students, null, 2);
-const pageTwo = getStudentsByCursor(students, pageOne.nextCursor, 2);
-const pageThree = getStudentsByCursor(students, pageTwo.nextCursor, 2);
+const pageOne = getStudentsByCursor(students, null, 2, 102);
+const pageTwo = getStudentsByCursor(students, pageOne.nextCursor, 2, 102);
+const pageThree = getStudentsByCursor(students, pageTwo.nextCursor, 2, 102);
 
 console.log("Page 1:", pageOne);
 console.log("Page 2:", pageTwo);
